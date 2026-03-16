@@ -1,191 +1,235 @@
-# 🤖 AI-Powered Organizational Chatbot
 
-An intelligent chatbot built using **Deep Learning** and **Natural Language Processing (NLP)** to help employees of large organizations quickly find answers to their questions related to **HR policies, IT support, company events, and other organizational information**.
+## TITLE:
+Secure Multi-User Organizational Knowledge Chatbot with Document Processing
 
-The chatbot also includes **document processing capabilities**, allowing users to upload documents and extract useful information such as summaries and keywords.
+## NAME: DEEPAK JG
+## REG NO:212224220019
 
----
+## Problem Title:
 
-## 📌 Problem Statement
+AI-Based Organizational Knowledge Chatbot with Secure Access and Document Processing
 
-Develop a chatbot using **Deep Learning and Natural Language Processing techniques** that can understand and respond to queries from employees of a large public sector organization.
+## Problem Description:
 
-The chatbot should:
+Large organizations handle a lot of internal information such as HR policies, leave rules, IT support procedures, and employee guidelines. Employees often waste time searching through documents or contacting departments for simple queries.
 
-- Answer questions related to **HR policies**
-- Provide **IT support guidance**
-- Share **company events and announcements**
-- Process uploaded documents to extract useful information
-- Support multiple users simultaneously
-- Maintain security through **Two-Factor Authentication (2FA)**
-- Filter inappropriate language
+There is a need for an intelligent system that can automatically answer employee queries, provide organization-related information, and analyze uploaded documents. The system should also ensure security by authenticating users and filtering inappropriate language.
 
----
+Therefore, an AI-based chatbot can be developed to provide quick access to organizational knowledge while supporting multiple users and basic document analysis.
 
-## 🚀 Features
+## Idea / Proposed Solution:
 
-### 🧠 Intelligent NLP Chatbot
-- Understands natural language queries from employees
-- Provides automated responses
-- Handles queries related to:
-  - HR policies
-  - Leave rules
-  - IT support issues
-  - Company events
-  - Organizational guidelines
+The proposed system is a Python-based AI chatbot that helps employees access internal organizational information easily.
 
----
+## Key ideas of the system:
 
-### 📄 Document Processing
-Employees can upload documents to the chatbot for analysis.
+A knowledge base stores common organizational information such as leave policies, password reset procedures, and timesheet updates.
 
-Supported capabilities:
+Users must pass OTP authentication before accessing the chatbot to ensure security.
 
-- **Text extraction**
-- **Keyword extraction**
-- **Document summarization**
+The chatbot processes user questions and retrieves answers from the knowledge base.
 
-For demonstration, an **8–10 page document** is used to show how the chatbot processes uploaded files.
+A bad language filter ensures professional communication.
 
----
+The system supports multiple users simultaneously using threading.
 
-### 👥 Multi-User Support
-The chatbot architecture is designed to be **scalable**.
+Users can simulate document uploads, and the system extracts a summary and important keywords.
 
-- Supports **minimum 5 users simultaneously**
-- Optimized response time
-- **Response time ≤ 5 seconds per query** (unless affected by connectivity issues)
+This solution improves communication efficiency and reduces workload on HR and IT departments.
 
----
-
-### 🔐 Two-Factor Authentication (2FA)
-Security is enhanced using **Email-based Two Factor Authentication**.
-
-Authentication process:
-
-1. User logs in to the chatbot
-2. A verification code (OTP) is sent to the registered email
-3. User enters the OTP
-4. Access is granted after verification
-
----
-
-### 🚫 Bad Language Filtering
-The chatbot includes a **bad language detection system**.
-
-- Uses a **system-maintained dictionary**
-- Detects offensive words
-- Prevents inappropriate communication
-
----
-
-## 🏗 System Architecture
-
-User → Login + 2FA → Chatbot Interface → NLP Processing Engine → Knowledge Base → Response Generation → User
-
-If a document is uploaded:
-
-Document Upload → Text Extraction → Keyword Extraction / Summarization → Output to User
-
----
-
-## 🛠 Technologies Used
-
-- **Python**
-- **Natural Language Processing (NLP)**
-- **Deep Learning**
-- **Flask / FastAPI**
-- **HTML, CSS, JavaScript**
-- **NLTK / SpaCy**
-- **Transformers (for summarization)**
-- **PyPDF / PDFMiner (for document text extraction)**
-- **Email API (for 2FA authentication)**
-
----
-
-## 📂 Project Structure
-
+## Architecture Diagram (Text Representation):
+   ```
+             +----------------------+
+                |      Users (1-5)     |
+                +----------+-----------+
+                           |
+                           v
+                +----------------------+
+                |   OTP Authentication |
+                +----------+-----------+
+                           |
+                           v
+                +----------------------+
+                |   Input Processing   |
+                | (Bad Word Filter)    |
+                +----------+-----------+
+                           |
+            +--------------+--------------+
+            |                             |
+            v                             v
++-----------------------+        +-----------------------+
+|   Knowledge Base      |        |   Document Processor  |
+| (Policies, IT Help)   |        | (Summary + Keywords)  |
++-----------+-----------+        +-----------+-----------+
+            |                                |
+            +---------------+----------------+
+                            |
+                            v
+                   +----------------+
+                   | Chatbot Engine |
+                   +--------+-------+
+                            |
+                            v
+                     +------------+
+                     |  Response  |
+                     +------------+
 ```
-organizational-chatbot
-│
-├── chatbot
-│   ├── model
-│   ├── training_data
-│   └── response_engine
-│
-├── document_processing
-│   ├── text_extraction
-│   ├── summarization
-│   └── keyword_extraction
-│
-├── authentication
-│   └── email_2fa
-│
-├── frontend
-│   ├── index.html
-│   ├── styles.css
-│   └── script.js
-│
-├── app.py
-├── requirements.txt
-└── README.md
+## PROGRAM:
+```
+import random
+import threading
+import time
+import re
+from collections import Counter
+
+# -----------------------------
+# Knowledge Base
+# -----------------------------
+knowledge_base = {
+    "leave": "Employees are entitled to 20 days of annual leave per year.",
+    "password": "Password reset requests must be submitted through the IT helpdesk portal.",
+    "it support": "IT support can be contacted through the internal helpdesk system.",
+    "events": "Annual company events include sports day, cultural fest, and innovation week.",
+    "timesheet": "Employees should update their timesheets every Friday.",
+    "remote work": "Remote work is allowed with manager approval."
+}
+
+# -----------------------------
+# Bad Language Filter
+# -----------------------------
+bad_words = {"stupid", "idiot", "dumb", "badword"}
+
+def filter_bad_language(text):
+    words = set(re.findall(r"\w+", text.lower()))
+    return not words.isdisjoint(bad_words)
+
+# -----------------------------
+# Chatbot Response Function
+# -----------------------------
+def chatbot_response(user_input):
+    text = user_input.lower()
+
+    for key in knowledge_base:
+        if key in text:
+            return knowledge_base[key]
+
+    return "Sorry, I couldn't find an answer in the organization knowledge base."
+
+# -----------------------------
+# Document Processing
+# -----------------------------
+def process_document(text):
+
+    words = re.findall(r"\w+", text.lower())
+
+    freq = Counter(words)
+
+    common_words = freq.most_common(5)
+
+    summary = " ".join(text.split()[:40])
+
+    print("\nDocument Summary:")
+    print(summary)
+
+    print("\nTop Keywords:")
+    print(common_words)
+
+# -----------------------------
+# OTP Authentication
+# -----------------------------
+def send_otp():
+
+    otp = random.randint(100000, 999999)
+
+    print("\nOTP sent to your email (simulation):", otp)
+
+    entered = input("Enter OTP: ")
+
+    if str(entered) == str(otp):
+        print("Authentication successful\n")
+        return True
+
+    print("Invalid OTP")
+    return False
+
+
+# -----------------------------
+# Chatbot Session
+# -----------------------------
+def chatbot_session(user_id):
+
+    print(f"\n--- User {user_id} Connected ---")
+
+    if not send_otp():
+        return
+
+    while True:
+
+        user_input = input(f"\nUser{user_id}: ")
+
+        if user_input.lower() == "exit":
+            print("Session ended")
+            break
+
+        if filter_bad_language(user_input):
+            print("Chatbot: Please avoid inappropriate language.")
+            continue
+
+        if user_input.startswith("upload"):
+
+            doc = """
+            Employees must follow HR policy guidelines.
+            HR policy explains leave rules, conduct and attendance.
+            Employees should read the HR policy before requesting leave.
+            """
+
+            process_document(doc)
+            continue
+
+        response = chatbot_response(user_input)
+
+        print("Chatbot:", response)
+
+        time.sleep(1)
+
+
+# -----------------------------
+# Multi User Simulation
+# -----------------------------
+def start_chatbot():
+
+    users = int(input("Enter number of users (max 5): "))
+
+    threads = []
+
+    for i in range(users):
+
+        t = threading.Thread(target=chatbot_session, args=(i+1,))
+        threads.append(t)
+        t.start()
+
+    for t in threads:
+        t.join()
+
+
+# -----------------------------
+# Main Program
+# -----------------------------
+if __name__ == "__main__":
+
+    print("\n=== Organization Chatbot ===")
+    print("Type 'exit' to quit")
+    print("Type 'upload' to test document processing\n")
+
+    start_chatbot()
 ```
 
----
-
-## 📊 Performance Requirements
-
-- Supports **minimum 5 concurrent users**
-- **Response time ≤ 5 seconds**
-- Scalable architecture for future expansion
-
----
-
-## 📄 Sample Data Sources
-
-Publicly available sample information is used for demonstration purposes, including:
-
-- HR policy documents
-- IT support guidelines
-- Organizational information
-
----
+## OUTPUT:
+![image alt](https://github.com/THANUJA111254/SIH_HACKTHON/blob/a0468f1cfc3539f94d1a2a7175a7b9c34e5b4ae9/Screenshot%202026-03-16%20140830.png)
 
 
 
----
 
-## 📦 Installation
 
-Clone the repository:
-
-```bash
-git clone https://github.com/yourusername/organizational-chatbot.git
-```
-
-Install dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
-Run the chatbot:
-
-```bash
-python app.py
-```
-
----
-
-## 🔐 Security Features
-
-- Email-based **Two-Factor Authentication**
-- Offensive language filtering
-- Secure query handling
-
----
-
-## 👨‍💻 Author
-
-**Deepak G**  
-Hackathon Project Submission
+## RESULT:
+The chatbot successfully answers organizational queries, authenticates users using OTP, filters inappropriate language, supports multiple users, and summarizes uploaded documents.
